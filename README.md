@@ -13,7 +13,7 @@ brew tap scicalculator/lammps
 brew info lammps
 
 # install
-brew install lammps ${opts}
+brew install lammps --HEAD ${opts}
 ```
 
 Please help me make this work better by testing options and giving
