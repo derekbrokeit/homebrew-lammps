@@ -9,7 +9,6 @@ class Lammps < Formula
     sha1 ''
     head 'http://git.icms.temple.edu/lammps-ro.git'
 
-    #depends_on "fftw"
 
     # setup packages
     DEFAULT_PACKAGE = %W[ manybody meam molecule reax opt ]
@@ -31,16 +30,16 @@ class Lammps < Formula
     shock
     srd
     xtc
-    user-misc 
-    user-atc 
-    user-awpmd 
-    user-cg-cmm 
-    user-colvars 
-    user-cuda 
-    user-eff 
-    user-omp 
-    user-molfile 
-    user-reaxc 
+    user-misc
+    user-atc
+    user-awpmd
+    user-cg-cmm
+    user-colvars
+    user-cuda
+    user-eff
+    user-omp
+    user-molfile
+    user-reaxc
     user-sph
     ]
     DEFAULT_PACKAGE.each do |package|
