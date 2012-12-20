@@ -101,7 +101,7 @@ class Lammps < Formula
 
     end
 
-    def pachees
+    def paches
         p = []
 
         p << "https://gist.github.com/raw/4343711/0f8eaba9d3aa463fbb79d98c756948463902317a/lammps_fftw-none.diff" unless build.include? "with-open-mpi"
