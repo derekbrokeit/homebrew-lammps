@@ -107,7 +107,7 @@ class Lammps < Formula
                 end
 
                 # installing with FFTW and JPEG
-                s.change_make_var! "FFT_INC"  , "-DFFT_FFTW3 -L#{Formula.factory('fftw').opt_prefix}/lib"
+                s.change_make_var! "FFT_INC"  , "-DFFT_FFTW3 -I#{Formula.factory('fftw').opt_prefix}/include"
                 s.change_make_var! "FFT_PATH" , "-L#{Formula.factory('fftw').opt_prefix}/lib"
                 s.change_make_var! "FFT_LIB"  , "-lfftw3"
 
