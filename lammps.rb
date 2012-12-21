@@ -51,12 +51,10 @@ class Lammps < Formula
 
     # additional options
     option "with-open-mpi", "Build lammps with open-mpi support"
-    option "with-jpeg", "Build lammps with jpeg support"
-    option "with-fftw", "Build lammps with brewed fftw support"
 
-    depends_on "fftw"       if build.include? "with-fftw"
-    depends_on "jpeg"       if build.include? "with-jpeg"
-    depends_on "open-mpi"   if build.include? "with-open-mpi"
+    depends_on 'fftw'
+    depends_on 'jpeg'
+    depends_on 'open-mpi'   if build.include? 'with-open-mpi'
 
     def build_lib(lmp_lib)
         cd "lib/"+lmp_lib do
@@ -107,21 +105,16 @@ class Lammps < Formula
                     s.change_make_var! "MPI_PATH" , "-L#{HOMEBREW_PREFIX}/lib"
                     s.change_make_var! "MPI_LIB"  , "-lmpi_cxx"
                 end
-                if build.include? "with-fftw"
-                    s.change_make_var! "FFT_INC"  , "-DFFT_FFTW3 -I#{HOMEBREW_PREFIX}/include"
-                    s.change_make_var! "FFT_PATH" , "-L#{HOMEBREW_PREFIX}/lib"
-                    s.change_make_var! "FFT_LIB"  , "-lfftw3"
-                else
-                    s.change_make_var! "FFT_INC"  , "-DFFT_NONE"
-                    s.change_make_var! "FFT_LIB"  , ""
-                end
-                if build.include? "with-jpeg"
-                    s.change_make_var! "JPG_INC"  , "-DLAMMPS_JPEG -I#{HOMEBREW_PREFIX}/include"
-                    s.change_make_var! "JPG_PATH" , "-L#{HOMEBREW_PREFIX}/lib"
-                    s.change_make_var! "JPG_LIB"  , "-ljpeg"
-                end
-            end
 
+                # installing with FFTW and JPEG
+                s.change_make_var! "FFT_INC"  , "-DFFT_FFTW3 -L#{Formula.factory('fftw').opt_prefix}/lib"
+                s.change_make_var! "FFT_PATH" , "-L#{Formula.factory('fftw').opt_prefix}/lib"
+                s.change_make_var! "FFT_LIB"  , "-lfftw3"
+
+                s.change_make_var! "JPG_INC"  , "-DLAMMPS_JPEG -I#{HOMEBREW_PREFIX}/include"
+                s.change_make_var! "JPG_PATH" , "-L#{HOMEBREW_PREFIX}/lib"
+                s.change_make_var! "JPG_LIB"  , "-ljpeg"
+            end
 
             ohai "Setting up packages"
             # setup default packages
