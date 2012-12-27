@@ -5,8 +5,6 @@ require 'formula'
 
 class Lammps < Formula
     homepage 'http://lammps.sandia.gov'
-    version ''
-    sha1 ''
     head 'http://git.icms.temple.edu/lammps-ro.git'
 
 
@@ -50,23 +48,24 @@ class Lammps < Formula
     end
 
     # additional options
-    option "with-open-mpi", "Build lammps with open-mpi support"
+    option "with-mpi", "Build lammps with MPI support"
 
     depends_on 'fftw'
     depends_on 'jpeg'
-    depends_on 'open-mpi'   if build.include? 'with-open-mpi'
+    depends_on MPIDependency.new(:cxx, :f90) if build.include? "with-mpi"
 
-    def build_lib(lmp_lib)
+    def build_f90_lib(lmp_lib)
         cd "lib/"+lmp_lib do
-            if build.include? "with-open-mpi"
-                system "make", "-f", "Makefile.tbird"
-            else
-                system "make", "-f", "Makefile.gfortran"
+            if build.include? "with-mpi"
+                inreplace "Makefile.gfortran" do |s|
+                    s.change_make_var! "F90", ENV["MPIFC"]
+                end
             end
+            system "make", "-f", "Makefile.gfortran"
             mv "Makefile.lammps.gfortran", "Makefile.lammps"
 
             flags = "-L#{HOMEBREW_PREFIX}/opt/gfortran/gfortran/lib -lgfortran"
-            flags += " " + "-L#{HOMEBREW_PREFIX}/lib -lmpi_f90" if build.include? "with-open-mpi"
+            flags += " " + "-L#{HOMEBREW_PREFIX}/lib -lmpi_f90" if build.include? "with-mpi"
             inreplace "Makefile.lammps" do |s|
                 s.change_make_var! lmp_lib+"_SYSLIB", flags
             end
@@ -81,10 +80,10 @@ class Lammps < Formula
         # create reax librar
         ohai "Setting up necessary libraries"
         unless build.include? "no-reax"
-            build_lib "reax"
+            build_f90_lib "reax"
         end
         unless build.include? "no-meam"
-            build_lib "meam"
+            build_f90_lib "meam"
         end
 
         # build the lammps program
@@ -97,8 +96,8 @@ class Lammps < Formula
                 # settings unnecessarily. We get a nice clean slate with "mac"
                 if build.include? "with-open-mpi"
                     # compiler info
-                    s.change_make_var! "CC"       , "mpic++"
-                    s.change_make_var! "LINK"     , "mpic++"
+                    s.change_make_var! "CC"       , ENV["MPICXX"]
+                    s.change_make_var! "LINK"     , ENV["MPICXX"]
 
                     #-DOMPI_SKIP_MPICXX is to speed up c++ compilation
                     s.change_make_var! "MPI_INC"  , "-DOMPI_SKIP_MPICXX -I#{HOMEBREW_PREFIX}/include"
@@ -107,7 +106,7 @@ class Lammps < Formula
                 end
 
                 # installing with FFTW and JPEG
-                s.change_make_var! "FFT_INC"  , "-DFFT_FFTW3 -L#{Formula.factory('fftw').opt_prefix}/lib"
+                s.change_make_var! "FFT_INC"  , "-DFFT_FFTW3 -L#{Formula.factory('fftw').opt_prefix}/include"
                 s.change_make_var! "FFT_PATH" , "-L#{Formula.factory('fftw').opt_prefix}/lib"
                 s.change_make_var! "FFT_LIB"  , "-lfftw3"
 
