@@ -7,94 +7,135 @@ class Lammps < Formula
     homepage 'http://lammps.sandia.gov'
     head 'http://git.icms.temple.edu/lammps-ro.git'
 
-
     # setup packages
-    DEFAULT_PACKAGE = %W[ manybody meam molecule reax opt ]
-    OTHER_PACKAGES = %W[
-    asphere
-    class2
-    colloid
-    dipole
-    fld
-    gpu
-    granular
-    kim
-    kspace
-    mc
-    peri
-    poems
-    replica
-    rigid
-    shock
-    srd
-    xtc
-    user-misc
-    user-atc
-    user-awpmd
-    user-cg-cmm
-    user-colvars
-    user-cuda
-    user-eff
-    user-omp
-    user-molfile
-    user-reaxc
-    user-sph
+    DEFAULT_PACKAGES = %W[ manybody meam molecule reax opt kspace ]
+    STANDARD_PACKAGES = %W[
+        asphere
+        colloid 
+        class2
+        dipole
+        fld
+        granular
+        mc
+        peri
+        poems
+        replica
+        rigid
+        shock
+        srd
+        xtc
     ]
-    DEFAULT_PACKAGE.each do |package|
-        option "no-#{package}", "Build lammps without the #{package} package"
-    end
-    OTHER_PACKAGES.each do |package|
-        option "yes-#{package}", "Build lammps with the #{package} package"
+    USER_PACKAGES= %W[
+        user-misc
+        user-awpmd
+        user-cg-cmm
+        user-colvars
+        user-eff
+        user-omp
+        user-molfile
+        user-reaxc
+        user-sph
+    ]
+
+    # the following are available packages that have not been tested
+    # Currently no machines available to test gpu and user-cuda (need
+    # nvidia graphics cards) KIM software is necessary for kim, probably
+    # useless user-atc needs some work to get to install (it seems to
+    # only install libs with mpi AND I couldn't get the final build to
+    # link to blas or lapack)
+    DISABLED_PACKAGES = %W[
+        gpu
+        kim
+    ]
+    DISABLED_USER_PACKAGES = %W[
+        user-atc
+        user-cuda
+    ]
+
+    # setup user-packages as options
+    USER_PACKAGES.each do |package|
+        option "enable-#{package}", "Build lammps with the '#{package}' package"
     end
 
     # additional options
     option "with-mpi", "Build lammps with MPI support"
+    option "all-standard", "Build lammps with all of the standard (non-user-submitted) packages (gpu and kim are disabled)"
+
+    ####
+    # not a real dependency, but needed to get MPIDependency to work right
+    depends_on 'scons' => :build
+    ####
 
     depends_on 'fftw'
     depends_on 'jpeg'
     depends_on MPIDependency.new(:cxx, :f90) if build.include? "with-mpi"
 
     def build_f90_lib(lmp_lib)
+        # we currently assume gfortran is our fortran library
         cd "lib/"+lmp_lib do
+            make_file = "Makefile.gfortran"
             if build.include? "with-mpi"
-                inreplace "Makefile.gfortran" do |s|
+                inreplace make_file do |s|
                     s.change_make_var! "F90", ENV["MPIFC"]
                 end
             end
-            system "make", "-f", "Makefile.gfortran"
-            mv "Makefile.lammps.gfortran", "Makefile.lammps"
+            system "make", "-f", make_file
 
-            flags = "-L#{HOMEBREW_PREFIX}/opt/gfortran/gfortran/lib -lgfortran"
-            flags += " " + "-L#{HOMEBREW_PREFIX}/lib -lmpi_f90" if build.include? "with-mpi"
+            ENV.append 'LDFLAGS', "-lgfortran -L#{Formula.factory('gfortran').opt_prefix}/gfortran/lib"
+
+            # empty it to reduce chance of conflicts
             inreplace "Makefile.lammps" do |s|
-                s.change_make_var! lmp_lib+"_SYSLIB", flags
+                s.change_make_var! lmp_lib+"_SYSINC", ""
+                s.change_make_var! lmp_lib+"_SYSLIB", "-lgfortran"
+                s.change_make_var! lmp_lib+"_SYSPATH", ""
             end
+        end
+    end
+
+    def build_cxx_lib(lmp_lib)
+        # we currently assume gfortran is our fortran library
+        cd "lib/"+lmp_lib do
+            make_file = "Makefile.g++"
+            if build.include? "with-mpi"
+                make_file = "Makefile.openmpi" if File.exists? "Makefile.openmpi"
+                inreplace make_file do |s|
+                    s.change_make_var! "CC" , ENV["MPICXX"]
+                end
+            end
+            system "make", "-f", make_file
         end
     end
 
     def install
         ENV.j1      # not parallel safe (some packages have race conditions :meam:)
         ENV.fortran # we need fortran for many packages, so just bring it along
-        ldflags = ""
 
-        # create reax librar
         ohai "Setting up necessary libraries"
-        unless build.include? "no-reax"
-            build_f90_lib "reax"
-        end
-        unless build.include? "no-meam"
-            build_f90_lib "meam"
+        build_f90_lib "reax"
+        build_f90_lib "meam"
+        build_cxx_lib "poems" if build.include? "all-standard"
+        build_cxx_lib "awpmd" if build.include? "enable-user-awpmd" and build.include? "with-mpi"
+        if build.include? "enable-user-colvars"
+            # the makefile is craeted by a user and is not of standard format
+            cd "lib/colvars" do
+                make_file = "Makefile.g++"
+                if build.include? "with-mpi"
+                    inreplace make_file do |s|
+                        s.change_make_var! "CXX" , ENV["MPICXX"]
+                    end
+                end
+                system "make", "-f", make_file
+            end
         end
 
         # build the lammps program
         cd "src" do
             # setup the make file variabls for fftw, jpeg, and mpi
             inreplace "MAKE/Makefile.mac" do |s|
-                # we will stick with the "mac" type and forget about "mac_mpi".
-                # this is because they are essentially the same, but "mac_mpi"
-                # installs jpeg support by default and changes some other
-                # settings unnecessarily. We get a nice clean slate with "mac"
-                if build.include? "with-open-mpi"
+                # We will stick with "make mac" type and forget about
+                # "make mac_mpi" because it has some unnecessary
+                # settings. We get a nice clean slate with "mac"
+                if build.include? "with-mpi"
                     # compiler info
                     s.change_make_var! "CC"       , ENV["MPICXX"]
                     s.change_make_var! "LINK"     , ENV["MPICXX"]
@@ -113,19 +154,33 @@ class Lammps < Formula
                 s.change_make_var! "JPG_INC"  , "-DLAMMPS_JPEG -I#{HOMEBREW_PREFIX}/include"
                 s.change_make_var! "JPG_PATH" , "-L#{HOMEBREW_PREFIX}/lib"
                 s.change_make_var! "JPG_LIB"  , "-ljpeg"
+
+                # add link-flags
+                s.change_make_var! "LINKFLAGS"  , ENV["LDFLAGS"]
+                s.change_make_var! "SHLIBFLAGS" , "-shared #{ENV['LDFLAGS']}"
             end
 
             ohai "Setting up packages"
-            # setup default packages
-            DEFAULT_PACKAGE.each do |pkg|
-                system "make","yes-" + pkg
+            # setup packages
+            if build.include? "all-standard"
+                # This includes all standard (not user-submitted) packages
+                # which includes default packages as well
+                system "make", "yes-standard"
+                DISABLED_PACKAGES.each do |pkg|
+                    system "make", "no-" + pkg
+                end
+            else
+                DEFAULT_PACKAGES.each do |pkg|
+                    system "make","yes-" + pkg
+                end
             end
             # setup optional packages
-            build.each do |pkg_opt|
-                system "make", pkg_opt.name if build.include? pkg_opt.name and (pkg_opt.name.include? "yes-" or pkg_opt.name.include? "no-")
+            USER_PACKAGES.each do |pkg|
+                system "make", "yes-" + pkg if build.include? "enable-" + pkg
             end
 
-            unless build.include? "with-open-mpi"
+            unless build.include? "with-mpi"
+                # build fake mpi library
                 cd "STUBS" do
                     system "make"
                 end
