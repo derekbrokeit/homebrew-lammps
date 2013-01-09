@@ -5,7 +5,7 @@ require 'formula'
 
 class Lammps < Formula
     homepage 'http://lammps.sandia.gov'
-    head 'http://git.icms.temple.edu/lammps-ro.git'
+    head 'svn://svn.icms.temple.edu/lammps-ro/trunk'
 
     # setup packages
     DEFAULT_PACKAGES = %W[ manybody meam molecule reax opt kspace ]
