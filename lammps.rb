@@ -5,6 +5,8 @@ require 'formula'
 
 class Lammps < Formula
     homepage 'http://lammps.sandia.gov'
+    url 'svn://svn.icms.temple.edu/lammps-ro/trunk', :revision => 9253
+    version '9253'
     head 'svn://svn.icms.temple.edu/lammps-ro/trunk'
 
     # setup packages
