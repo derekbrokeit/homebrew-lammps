@@ -258,4 +258,24 @@ class Lammps < Formula
         EOS
     end
 
+    def patches
+        DATA
+    end
 end
+
+__END__
+diff --git a/python/lammps.py b/python/lammps.py
+index c65e84c..b2b28a2 100644
+--- a/python/lammps.py
++++ b/python/lammps.py
+@@ -23,8 +23,8 @@ class lammps:
+     # if name = "g++", load liblammps_g++.so
+ 
+     try:
+-      if not name: self.lib = CDLL("liblammps.so",RTLD_GLOBAL)
+-      else: self.lib = CDLL("liblammps_%s.so" % name,RTLD_GLOBAL)
++      if not name: self.lib = CDLL("HOMEBREW_PREFIX/lib/liblammps.so",RTLD_GLOBAL)
++      else: self.lib = CDLL("HOMEBREW_PREFIX/lib/liblammps_%s.so" % name,RTLD_GLOBAL)
+     except:
+       type,value,tb = sys.exc_info()
+       traceback.print_exception(type,value,tb)
