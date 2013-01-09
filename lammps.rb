@@ -181,38 +181,26 @@ class Lammps < Formula
 
             brew rm lammps && brew install lammps --HEAD @OPTIONS@
 
-        Read the documentation at your leisure:
-
-            open #{prefix}/doc/Manual.html
-
-        If you want to test your machine with benchmark tests, you can
-        go the bench directory. There are several tests, for example
-        this tests with the Lennard-Jones pair potential.
+        You should run a benchmark test or two. There are plenty available.
 
             cd #{prefix}/bench
             lammps -in in.lj
 
-        The potential files are found here:
+        The following directories could come in handy
 
-            #{prefix}/potentials
+            Documentation
+                #{prefix}/doc/Manual.html
 
-        Examples of lammps' python module can be found here:
+            Potential files
+                #{prefix}/potentials
 
-            #{prefix}/python-examples
+            Python examples
+                #{prefix}/python-examples
 
-        Additional tools for use with lammps are included, but
-        some may have additioanl requirements. Please read tool
-        README's carefully.
-
-            #{prefix}/tools
+            Additional tools (may require manual installation)
+                #{prefix}/tools
 
         EOS
     end
 
-    # make sure to put in caveats:
-    # * location of docs with `open /usr/local/Cellar/...html`
-    # * location of potential files
-    # * location of examples directory
-    # * location of benchmarking examples
-    # * location of tools directory
 end
