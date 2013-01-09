@@ -170,7 +170,7 @@ class Lammps < Formula
 
     def test
         system "lammps","-in","#{prefix}/bench/in.lj"
-        system "python","-c","import lammps"
+        system "python","-c","from lammps import lammps ; lammps().file('#{prefix}/bench/in.lj')"
     end
 
     def caveats
