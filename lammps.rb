@@ -91,7 +91,7 @@ class Lammps < Formula
         ohai "Building package libraries"
         build_f90_lib "reax"
         build_f90_lib "meam"
-        build_cxx_lib "poems" 
+        build_cxx_lib "poems"
         build_cxx_lib "awpmd" if build.include? "enable-user-awpmd" and build.include? "with-mpi"
         if build.include? "enable-user-colvars"
             # the makefile is craeted by a user and is not of standard format
