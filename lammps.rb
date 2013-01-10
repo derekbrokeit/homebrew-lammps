@@ -83,7 +83,6 @@ class Lammps < Formula
         ENV.j1      # not parallel safe (some packages have race conditions :meam:)
         ENV.fortran # we need fortran for many packages, so just bring it along
 
-        ohai "Building package libraries"
         build_f90_lib "reax"
         build_f90_lib "meam"
         build_cxx_lib "poems"
@@ -103,7 +102,6 @@ class Lammps < Formula
 
         # build the lammps program and library
         cd "src" do
-            ohai "Building lammps ... get yourself a beverage, it may take some time"
             # setup the make file variabls for fftw, jpeg, and mpi
             inreplace "MAKE/Makefile.mac" do |s|
                 # We will stick with "make mac" type and forget about
