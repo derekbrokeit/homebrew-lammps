@@ -45,8 +45,8 @@ class Lammps < Formula
     option "all-standard", "Build lammps with all of the standard (non-user-submitted) packages (gpu and kim are disabled)"
 
     ####
-    # not a real dependency, but needed to get MPIDependency to work right
-    depends_on 'scons' => :build
+    # needed to hack around MPIDependency not working
+    env :std
     ####
 
     depends_on 'fftw'
