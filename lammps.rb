@@ -134,7 +134,6 @@ class Lammps < Formula
 
             # setup standard packages
             # This includes all standard (not user-submitted) packages
-            # which includes default packages as well
             system "make", "yes-standard"
             DISABLED_PACKAGES.each do |pkg|
                 system "make", "no-" + pkg
