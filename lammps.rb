@@ -1,8 +1,5 @@
 require 'formula'
 
-# Documentation: https://github.com/mxcl/homebrew/wiki/Formula-Cookbook
-# PLEASE REMOVE ALL GENERATED COMMENTS BEFORE SUBMITTING YOUR PULL REQUEST!
-
 class Lammps < Formula
     homepage 'http://lammps.sandia.gov'
     url 'http://lammps.sandia.gov/tars/lammps-11Jan13.tar.gz'
@@ -205,12 +202,6 @@ class Lammps < Formula
 
     def caveats
         <<-EOS.undent
-        Lammps is always updating to fix old problems and add features.
-        Make sure to keep lammps up to date by reinstalling the HEAD
-        occasionally with your desired options.
-
-            brew rm lammps && brew install lammps --HEAD @OPTIONS@
-
         You should run a benchmark test or two. There are plenty available.
 
             cd #{prefix}/bench
@@ -218,17 +209,17 @@ class Lammps < Formula
 
         The following directories could come in handy
 
-            Documentation
-                #{prefix}/doc/Manual.html
+            Documentation:
+            #{prefix}/doc/Manual.html
 
-            Potential files
-                #{prefix}/potentials
+            Potential files:
+            #{prefix}/potentials
 
-            Python examples
-                #{prefix}/python-examples
+            Python examples:
+            #{prefix}/python-examples
 
-            Additional tools (may require manual installation)
-                #{prefix}/tools
+            Additional tools (may require manual installation):
+            #{prefix}/tools
 
         EOS
     end
