@@ -40,11 +40,6 @@ class Lammps < Formula
     # additional options
     option "with-mpi", "Build lammps with MPI support"
 
-    ####
-    # needed to hack around MPIDependency not working
-    env :std
-    ####
-
     depends_on 'fftw'
     depends_on 'jpeg'
     depends_on MPIDependency.new(:cxx, :f90) if build.include? "with-mpi"
