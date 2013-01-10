@@ -10,24 +10,7 @@ class Lammps < Formula
     sha1 '6ee291fe91360c241a6c5a6f3caac11048c004d8'
     head 'svn://svn.icms.temple.edu/lammps-ro/trunk'
 
-    # setup packages
-    DEFAULT_PACKAGES = %W[ manybody meam molecule reax opt kspace ]
-    STANDARD_PACKAGES = %W[
-        asphere
-        colloid 
-        class2
-        dipole
-        fld
-        granular
-        mc
-        peri
-        poems
-        replica
-        rigid
-        shock
-        srd
-        xtc
-    ]
+    # user-submitted packages not considered "standard"
     USER_PACKAGES= %W[
         user-misc
         user-awpmd
@@ -40,12 +23,9 @@ class Lammps < Formula
         user-sph
     ]
 
-    # the following are available packages that have not been tested
-    # Currently no machines available to test gpu and user-cuda (need
-    # nvidia graphics cards) KIM software is necessary for kim, probably
-    # useless user-atc needs some work to get to install (it seems to
-    # only install libs with mpi AND I couldn't get the final build to
-    # link to blas or lapack)
+    # could not get gpu or user-cuda to install (hardware problem?)
+    # kim requires openkim software, which is not currently in homebrew.
+    # user-atc would not install without mpi and then would not link to blas-lapack
     DISABLED_PACKAGES = %W[
         gpu
         kim
@@ -96,7 +76,6 @@ class Lammps < Formula
     end
 
     def build_cxx_lib(lmp_lib)
-        # we currently assume gfortran is our fortran library
         cd "lib/"+lmp_lib do
             make_file = "Makefile.g++"
             if build.include? "with-mpi"
@@ -113,10 +92,10 @@ class Lammps < Formula
         ENV.j1      # not parallel safe (some packages have race conditions :meam:)
         ENV.fortran # we need fortran for many packages, so just bring it along
 
-        ohai "Setting up necessary libraries"
+        ohai "Building package libraries"
         build_f90_lib "reax"
         build_f90_lib "meam"
-        build_cxx_lib "poems" if build.include? "all-standard"
+        build_cxx_lib "poems" 
         build_cxx_lib "awpmd" if build.include? "enable-user-awpmd" and build.include? "with-mpi"
         if build.include? "enable-user-colvars"
             # the makefile is craeted by a user and is not of standard format
@@ -131,8 +110,9 @@ class Lammps < Formula
             end
         end
 
-        # build the lammps program
+        # build the lammps program and library
         cd "src" do
+            ohai "Building lammps ... get yourself a beverage, it may take some time"
             # setup the make file variabls for fftw, jpeg, and mpi
             inreplace "MAKE/Makefile.mac" do |s|
                 # We will stick with "make mac" type and forget about
@@ -163,20 +143,14 @@ class Lammps < Formula
                 s.change_make_var! "SHLIBFLAGS" , "-shared #{ENV['LDFLAGS']}"
             end
 
-            ohai "Setting up packages"
-            # setup packages
-            if build.include? "all-standard"
-                # This includes all standard (not user-submitted) packages
-                # which includes default packages as well
-                system "make", "yes-standard"
-                DISABLED_PACKAGES.each do |pkg|
-                    system "make", "no-" + pkg
-                end
-            else
-                DEFAULT_PACKAGES.each do |pkg|
-                    system "make","yes-" + pkg
-                end
+            # setup standard packages
+            # This includes all standard (not user-submitted) packages
+            # which includes default packages as well
+            system "make", "yes-standard"
+            DISABLED_PACKAGES.each do |pkg|
+                system "make", "no-" + pkg
             end
+
             # setup optional packages
             USER_PACKAGES.each do |pkg|
                 system "make", "yes-" + pkg if build.include? "enable-" + pkg
@@ -189,7 +163,6 @@ class Lammps < Formula
                 end
             end
 
-            ohai "Building lammps ... get yourself a beverage, it may take some time"
             system "make", "mac"
             mv "lmp_mac", "lammps" # rename it to make it easier to find
 
