@@ -42,7 +42,6 @@ class Lammps < Formula
 
     # additional options
     option "with-mpi", "Build lammps with MPI support"
-    option "all-standard", "Build lammps with all of the standard (non-user-submitted) packages (gpu and kim are disabled)"
 
     ####
     # needed to hack around MPIDependency not working
