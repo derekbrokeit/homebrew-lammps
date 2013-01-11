@@ -114,7 +114,7 @@ class Lammps < Formula
           #-DOMPI_SKIP_MPICXX is to speed up c++ compilation
           s.change_make_var! "MPI_INC"  , "-DOMPI_SKIP_MPICXX -I#{HOMEBREW_PREFIX}/include"
           s.change_make_var! "MPI_PATH" , "-L#{HOMEBREW_PREFIX}/lib"
-          s.change_make_var! "MPI_LIB"  , "-lmpi_cxx"
+          s.change_make_var! "MPI_LIB"  , ""
         end
 
         # installing with FFTW and JPEG
