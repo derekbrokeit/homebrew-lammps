@@ -2,8 +2,8 @@ require 'formula'
 
 class Lammps < Formula
   homepage 'http://lammps.sandia.gov'
-  url 'http://lammps.sandia.gov/tars/lammps-11Jan13.tar.gz'
-  version '04-Jan-2013_1750'
+  url 'svn://svn.icms.temple.edu/lammps-ro/trunk', :revision => 9258
+  version '2013.01.11'
   sha1 '6ee291fe91360c241a6c5a6f3caac11048c004d8'
   head 'svn://svn.icms.temple.edu/lammps-ro/trunk'
 
@@ -175,11 +175,13 @@ class Lammps < Formula
       prefix.install("python-examples")
     end
 
+#    # install additional materials
+#    prefix.install("doc")
+#    prefix.install("potentials")
+#    prefix.install("tools")
+#    prefix.install("bench")
     # install additional materials
-    prefix.install("doc")
-    prefix.install("potentials")
-    prefix.install("tools")
-    prefix.install("bench")
+    (share/'lammps').install(["doc", "potentials", "tools", "bench"])
   end
 
   def which_python
@@ -198,7 +200,7 @@ class Lammps < Formula
     <<-EOS.undent
     You should run a benchmark test or two. There are plenty available.
 
-      cd #{prefix}/bench
+      cd #{HOMEBREW_PREFIX/'share/lammps'}/bench
       lammps -in in.lj
       # with openmpi
       mpiexec -n 2 lammps -in in.lj
@@ -206,16 +208,16 @@ class Lammps < Formula
     The following directories could come in handy
 
       Documentation:
-      #{prefix}/doc/Manual.html
+      #{HOMEBREW_PREFIX/'share/lammps'}/doc/Manual.html
 
       Potential files:
-      #{prefix}/potentials
+      #{HOMEBREW_PREFIX/'share/lammps'}/potentials
 
       Python examples:
-      #{prefix}/python-examples
+      #{HOMEBREW_PREFIX/'share/lammps'}/python-examples
 
       Additional tools (may require manual installation):
-      #{prefix}/tools
+      #{HOMEBREW_PREFIX/'share/lammps'}/tools
 
     EOS
   end
