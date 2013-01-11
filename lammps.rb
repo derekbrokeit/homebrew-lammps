@@ -2,10 +2,9 @@ require 'formula'
 
 class Lammps < Formula
   homepage 'http://lammps.sandia.gov'
-  url 'svn://svn.icms.temple.edu/lammps-ro/trunk', :revision => 9258
+  url 'http://git.icms.temple.edu/lammps-ro.git', :revision => 'e66eccef5f4ac61a669f397ef30f68e228357632'
   version '2013.01.11'
-  sha1 '6ee291fe91360c241a6c5a6f3caac11048c004d8'
-  head 'svn://svn.icms.temple.edu/lammps-ro/trunk'
+  head 'http://git.icms.temple.edu/lammps-ro.git'
 
   # user-submitted packages not considered "standard"
   USER_PACKAGES= %W[
