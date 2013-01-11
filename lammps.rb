@@ -218,6 +218,9 @@ class Lammps < Formula
         EOS
     end
 
+    # This fixes the python module to point to the absolute path of the lammps library
+    # without this the module cannot find the library when homebrew is installed in a 
+    # custom directory.
     def patches
         DATA
     end
