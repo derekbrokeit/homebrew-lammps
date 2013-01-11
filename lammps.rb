@@ -80,7 +80,7 @@ class Lammps < Formula
   end
 
   def install
-    ENV.j1    # not parallel safe (some packages have race conditions :meam:)
+    ENV.j1      # not parallel safe (some packages have race conditions :meam:)
     ENV.fortran # we need fortran for many packages, so just bring it along
 
     build_f90_lib "reax"
@@ -133,7 +133,6 @@ class Lammps < Formula
       end
 
       # setup standard packages
-      # This includes all standard (not user-submitted) packages
       system "make", "yes-standard"
       DISABLED_PACKAGES.each do |pkg|
         system "make", "no-" + pkg
