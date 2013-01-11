@@ -217,6 +217,9 @@ class Lammps < Formula
       Additional tools (may require manual installation):
       #{prefix}/tools
 
+    To use the Python module with non-homebrew Python, you need to amend your
+    PYTHONPATH like so:
+      export PYTHONPATH=#{HOMEBREW_PREFIX}/lib/python2.7/site-packages:$PYTHONPATH
     EOS
   end
 
