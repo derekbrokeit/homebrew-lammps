@@ -201,7 +201,7 @@ class Lammps < Formula
 
       cd #{HOMEBREW_PREFIX}/share/lammps/bench
       lammps -in in.lj
-      # with openmpi
+      # with mpi
       mpiexec -n 2 lammps -in in.lj
 
     The following directories could come in handy
