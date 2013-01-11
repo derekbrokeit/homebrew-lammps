@@ -199,7 +199,7 @@ class Lammps < Formula
     <<-EOS.undent
     You should run a benchmark test or two. There are plenty available.
 
-      cd #{HOMEBREW_PREFIX/'share/lammps'}/bench
+      cd #{HOMEBREW_PREFIX}/share/lammps/bench
       lammps -in in.lj
       # with openmpi
       mpiexec -n 2 lammps -in in.lj
@@ -207,16 +207,16 @@ class Lammps < Formula
     The following directories could come in handy
 
       Documentation:
-      #{HOMEBREW_PREFIX/'share/lammps'}/doc/Manual.html
+      #{HOMEBREW_PREFIX}/share/lammps/doc/Manual.html
 
       Potential files:
-      #{HOMEBREW_PREFIX/'share/lammps'}/potentials
+      #{HOMEBREW_PREFIX}/share/lammps/potentials
 
       Python examples:
-      #{HOMEBREW_PREFIX/'share/lammps'}/python-examples
+      #{HOMEBREW_PREFIX}/share/lammps/python-examples
 
       Additional tools (may require manual installation):
-      #{HOMEBREW_PREFIX/'share/lammps'}/tools
+      #{HOMEBREW_PREFIX}/share/lammps/tools
 
     EOS
   end
