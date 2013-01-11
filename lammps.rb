@@ -188,8 +188,11 @@ class Lammps < Formula
   end
 
   def test
-    system "lammps","-in","#{prefix}/bench/in.lj"
-    system "python","-c","from lammps import lammps ; lammps().file('#{prefix}/bench/in.lj')"
+    # to prevent log files, move them to a temporary directory
+    mktemp do
+      system "lammps","-in","#{prefix}/bench/in.lj"
+      system "python","-c","from lammps import lammps ; lammps().file('#{prefix}/bench/in.lj')"
+    end
   end
 
   def caveats
