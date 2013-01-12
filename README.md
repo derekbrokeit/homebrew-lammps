@@ -1,6 +1,30 @@
 homebrew-lammps
 ===============
 
+**Warning**: This tap is depricated because it has been incorporated into
+the main homebrew/science tap. This repository remains in order to preserve
+the history of the lammps formula since it was squashed into a single commit
+for homebrew/science. To get the lammps package now with whatever desired 
+options, run:
+
+```
+brew tap homebrew/science
+brew install lammmps @options@
+```
+
+The following is the original descriptions of this brew, it may not be up to
+date about options. To check options for the current version of lammps on homebrew
+use:
+
+```
+brew info lammps
+```
+
+
+*Enjoy*!
+
+---
+
 A hombrew formula for [lammps][lammps]. Lammps is a power molecular
 dynamics simulator, but it can be tricky to install properly. That's
 where brew comes in to help you manage all of it to get the most out of

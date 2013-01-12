@@ -81,6 +81,7 @@ class Lammps < Formula
   def install
     ENV.j1      # not parallel safe (some packages have race conditions :meam:)
     ENV.fortran # we need fortran for many packages, so just bring it along
+    onoe "This tap is depricated, please run 'brew tap homebrew/science && brew install lammps' plus any additional options"
 
     build_f90_lib "reax"
     build_f90_lib "meam"
