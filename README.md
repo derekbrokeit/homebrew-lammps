@@ -1,9 +1,9 @@
 # Deprication warning
 
 **Warning**: This tap is **depricated** because it has been incorporated into
-the main homebrew/science tap. This repository remains in order to preserve
+the main [homebrew/science][hbsci] tap. This repository remains in order to preserve
 the history of the lammps formula since it was squashed into a single commit
-for homebrew/science. To get the lammps package now with whatever desired 
+for [homebrew/science][hbsci]. To get the lammps package now with whatever desired 
 options, run:
 
 ```
