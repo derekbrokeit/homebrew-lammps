@@ -7,6 +7,7 @@ for [homebrew/science][hbsci]. To get the lammps package now with whatever desir
 options, run:
 
 ```
+brew untap scicalculator/lammps
 brew tap homebrew/science
 brew install lammmps @options@
 ```
